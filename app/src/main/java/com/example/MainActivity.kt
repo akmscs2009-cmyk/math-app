@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.model.AppScreen
+import com.example.ui.screens.BlockedScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.PracticeScreen
 import com.example.ui.screens.ResultsScreen
@@ -48,8 +49,8 @@ fun KidsMathApp(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Handle system back button properly based on current screen
-    BackHandler(enabled = uiState.currentScreen != AppScreen.HOME) {
+    // Handle system back button properly based on current screen, disabled if app is blocked
+    BackHandler(enabled = !uiState.isBlocked && uiState.currentScreen != AppScreen.HOME) {
         when (uiState.currentScreen) {
             AppScreen.SELECT_OPERATION -> viewModel.navigateTo(AppScreen.HOME)
             AppScreen.PRACTICE -> viewModel.navigateTo(AppScreen.SELECT_OPERATION)
@@ -58,40 +59,47 @@ fun KidsMathApp(
         }
     }
 
-    when (uiState.currentScreen) {
-        AppScreen.HOME -> {
-            HomeScreen(
-                onStartGameClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
-                modifier = modifier
-            )
-        }
-        AppScreen.SELECT_OPERATION -> {
-            SelectOperationScreen(
-                onSelectOperation = { operation -> viewModel.startNewGame(operation) },
-                onBackToHome = { viewModel.navigateTo(AppScreen.HOME) },
-                modifier = modifier
-            )
-        }
-        AppScreen.PRACTICE -> {
-            PracticeScreen(
-                uiState = uiState,
-                onDigitClick = { digit -> viewModel.appendDigit(digit) },
-                onDeleteClick = { viewModel.deleteDigit() },
-                onClearClick = { viewModel.clearInput() },
-                onSubmitClick = { viewModel.submitAnswer() },
-                onNextClick = { viewModel.nextQuestion() },
-                onExitClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
-                modifier = modifier
-            )
-        }
-        AppScreen.RESULTS -> {
-            ResultsScreen(
-                uiState = uiState,
-                onPlayAgainClick = { viewModel.restartCurrentOperation() },
-                onChooseOperationClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
-                onHomeClick = { viewModel.resetToHome() },
-                modifier = modifier
-            )
+    if (uiState.isBlocked) {
+        BlockedScreen(
+            secondsRemaining = uiState.blockedSecondsRemaining,
+            modifier = modifier
+        )
+    } else {
+        when (uiState.currentScreen) {
+            AppScreen.HOME -> {
+                HomeScreen(
+                    onStartGameClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
+                    modifier = modifier
+                )
+            }
+            AppScreen.SELECT_OPERATION -> {
+                SelectOperationScreen(
+                    onSelectOperation = { operation -> viewModel.startNewGame(operation) },
+                    onBackToHome = { viewModel.navigateTo(AppScreen.HOME) },
+                    modifier = modifier
+                )
+            }
+            AppScreen.PRACTICE -> {
+                PracticeScreen(
+                    uiState = uiState,
+                    onDigitClick = { digit -> viewModel.appendDigit(digit) },
+                    onDeleteClick = { viewModel.deleteDigit() },
+                    onClearClick = { viewModel.clearInput() },
+                    onSubmitClick = { viewModel.submitAnswer() },
+                    onNextClick = { viewModel.nextQuestion() },
+                    onExitClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
+                    modifier = modifier
+                )
+            }
+            AppScreen.RESULTS -> {
+                ResultsScreen(
+                    uiState = uiState,
+                    onPlayAgainClick = { viewModel.restartCurrentOperation() },
+                    onChooseOperationClick = { viewModel.navigateTo(AppScreen.SELECT_OPERATION) },
+                    onHomeClick = { viewModel.resetToHome() },
+                    modifier = modifier
+                )
+            }
         }
     }
 }

@@ -131,19 +131,40 @@ fun PracticeScreen(
                     }
                 }
 
-                // Score pill
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color.White,
-                    shadowElevation = 1.dp
+                // Score and mistakes pill
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Score: ${uiState.correctCount}",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = FunGreen,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
+                    if (uiState.wrongCount > 0) {
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color(0xFFFEE2E2),
+                            shadowElevation = 1.dp
+                        ) {
+                            Text(
+                                text = "Mistakes: ${uiState.wrongCount}/3",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFDC2626),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color.White,
+                        shadowElevation = 1.dp
+                    ) {
+                        Text(
+                            text = "Score: ${uiState.correctCount}",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = FunGreen,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
                 }
             }
 

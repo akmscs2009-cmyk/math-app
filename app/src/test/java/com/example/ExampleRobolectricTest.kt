@@ -76,4 +76,43 @@ class ExampleRobolectricTest {
     assertEquals("", viewModel.uiState.value.inputAnswer)
     assertEquals(FeedbackState.NONE, viewModel.uiState.value.feedbackState)
   }
+
+  @Test
+  fun `3 wrong answers triggers 1 minute app lock`() {
+    val viewModel = MathQuizViewModel()
+    viewModel.startNewGame(MathOperation.ADDITION)
+
+    val wrongAnswer = "999"
+
+    // 1st wrong answer
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.submitAnswer()
+    assertEquals(1, viewModel.uiState.value.wrongCount)
+    assertEquals(false, viewModel.uiState.value.isBlocked)
+    viewModel.nextQuestion()
+
+    // 2nd wrong answer
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.submitAnswer()
+    assertEquals(2, viewModel.uiState.value.wrongCount)
+    assertEquals(false, viewModel.uiState.value.isBlocked)
+    viewModel.nextQuestion()
+
+    // 3rd wrong answer
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.appendDigit("9")
+    viewModel.submitAnswer()
+    assertEquals(3, viewModel.uiState.value.wrongCount)
+    assertEquals(true, viewModel.uiState.value.isBlocked)
+    assertEquals(60, viewModel.uiState.value.blockedSecondsRemaining)
+
+    // Verify input is ignored while blocked
+    viewModel.appendDigit("5")
+    assertEquals("999", viewModel.uiState.value.inputAnswer)
+  }
 }

@@ -1,6 +1,8 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -38,11 +40,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.model.FeedbackState
 import com.example.ui.theme.FunGreen
 import com.example.ui.theme.FunGreenLight
@@ -270,15 +275,18 @@ fun FeedbackCard(
     val isCorrect = (state == FeedbackState.CORRECT)
     val bgColor = if (isCorrect) FunGreenLight else FunRedLight
     val borderColor = if (isCorrect) FunGreen else FunRed
-    val titleText = if (isCorrect) "🎉 Awesome! That's Correct!" else "💪 Nice Try!"
-    val subtitleText = if (isCorrect) "You got the right answer!" else "The correct answer is $correctAnswerText"
+    val titleText = if (isCorrect) "🎉 Awesome! That's Correct!" else "😢 Oh No! Nice Try!"
+    val subtitleText = if (isCorrect) "You got the right answer! Keep it up! 👏" else "The correct answer is $correctAnswerText"
+    val cartoonImageRes = if (isCorrect) R.drawable.img_cartoon_clapping else R.drawable.img_cartoon_sad
+    val cartoonDesc = if (isCorrect) "Funny cartoon clapping enthusiastically" else "Sad cartoon with sad face"
 
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier
             .fillMaxWidth()
+            .border(2.dp, borderColor.copy(alpha = 0.4f), RoundedCornerShape(24.dp))
             .testTag("feedback_card")
     ) {
         Column(
@@ -288,6 +296,26 @@ fun FeedbackCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            // Cartoon illustration badge
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .shadow(3.dp, CircleShape)
+                    .background(Color.White, CircleShape)
+                    .border(2.dp, borderColor, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = cartoonImageRes),
+                    contentDescription = cartoonDesc,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(82.dp)
+                        .clip(CircleShape)
+                        .testTag(if (isCorrect) "cartoon_clapping_img" else "cartoon_sad_img")
+                )
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -296,13 +324,13 @@ fun FeedbackCard(
                     imageVector = if (isCorrect) Icons.Default.CheckCircle else Icons.Default.Close,
                     contentDescription = null,
                     tint = borderColor,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(24.dp)
                 )
-                Box(modifier = Modifier.size(8.dp))
+                Box(modifier = Modifier.size(6.dp))
                 Text(
                     text = titleText,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Black,
                     color = if (isCorrect) Color(0xFF065F46) else Color(0xFF991B1B)
                 )
             }
@@ -310,7 +338,7 @@ fun FeedbackCard(
             Text(
                 text = subtitleText,
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = if (isCorrect) Color(0xFF047857) else Color(0xFFB91C1C),
                 textAlign = TextAlign.Center
             )
