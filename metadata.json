@@ -1,0 +1,6 @@
+{
+  "name": "Kids Math Fun",
+  "description": "A fun and simple basic arithmetic practice app for children aged 5–10 years.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
